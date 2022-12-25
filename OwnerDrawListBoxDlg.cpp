@@ -18,7 +18,7 @@
 
 
 COwnerDrawListBoxDlg::COwnerDrawListBoxDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_OWNERDRAWLISTBOX_DIALOG, pParent)
+	: CDialogEx(IDD_OWNERDRAWLISTBOX_DIALOG, pParent), m_list_box_bk_brush(RGB(0, 0, 128))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -32,6 +32,8 @@ void COwnerDrawListBoxDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(COwnerDrawListBoxDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_DRAWITEM()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -46,7 +48,14 @@ BOOL COwnerDrawListBoxDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
-	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	CString str;
+	for (int i = 0; i < 10; i++)
+	{
+		str.Format(L"item - %d", i);
+		m_data_list.InsertString(i, str);
+	}
+
+	m_data_list.SetItemHeight(0, 25);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -87,3 +96,56 @@ HCURSOR COwnerDrawListBoxDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void COwnerDrawListBoxDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDS)
+{
+	if (nIDCtl == IDC_DATA_LIST)
+		if (lpDS->itemID != 0xFFFFFFFF && lpDS->itemID < m_data_list.GetCount())
+		{
+			if ((lpDS->itemAction & ODA_DRAWENTIRE) ||
+				(lpDS->itemAction & ODA_FOCUS) ||
+				(lpDS->itemAction & ODA_SELECT))
+			{
+				CDC* p_dc = CDC::FromHandle(lpDS->hDC);
+
+				if (lpDS->itemState & ODS_SELECTED)
+				{
+					if (lpDS->itemState & ODS_FOCUS)
+					{
+						p_dc->FillSolidRect(&lpDS->rcItem, RGB(0, 200, 255));
+					}
+					else
+					{
+						p_dc->FillSolidRect(&lpDS->rcItem, RGB(0, 100, 255));
+					}
+					p_dc->SetTextColor(RGB(255, 255, 0));
+				}
+				else
+				{
+					p_dc->FillSolidRect(&lpDS->rcItem, RGB(0, 0, 128));
+					p_dc->SetTextColor(RGB(128, 128, 128));
+				}
+
+				CString str;
+				m_data_list.GetText(lpDS->itemID, str);
+				p_dc->TextOut(lpDS->rcItem.left + 5, lpDS->rcItem.top + 5, str);
+			}
+		}
+	
+	else CDialogEx::OnDrawItem(nIDCtl, lpDS);
+}
+
+
+HBRUSH COwnerDrawListBoxDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr;
+		
+	if (pWnd != NULL && pWnd->m_hWnd == m_data_list.m_hWnd) // 새로 그리는 핸들이 같을 경우
+	{
+		hbr = m_list_box_bk_brush;
+	}
+	else hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	return hbr;
+}

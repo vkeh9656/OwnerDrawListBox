@@ -4,7 +4,6 @@
 //
 #define IDD_OWNERDRAWLISTBOX_DIALOG     102
 #define IDR_MAINFRAME                   128
-#define IDC_LIST1                       1000
 #define IDC_DATA_LIST                   1000
 
 // Next default values for new objects
