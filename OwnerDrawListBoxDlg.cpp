@@ -12,6 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
+#pragma comment (lib, "SJ_ListBox.lib")
 
 // COwnerDrawListBoxDlg 대화 상자
 
