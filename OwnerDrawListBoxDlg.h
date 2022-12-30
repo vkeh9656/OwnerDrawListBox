@@ -3,13 +3,13 @@
 //
 
 #pragma once
-
+#include "SJ_ListBox.h"
 
 // COwnerDrawListBoxDlg 대화 상자
 class COwnerDrawListBoxDlg : public CDialogEx
 {
 private:
-	CBrush m_list_box_bk_brush;
+	SJ_ListBox m_data_list;
 // 생성입니다.
 public:
 	COwnerDrawListBoxDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
@@ -32,8 +32,5 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
-public:
-	CListBox m_data_list;
-	afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+
 };
