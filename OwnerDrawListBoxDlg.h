@@ -5,11 +5,28 @@
 #pragma once
 #include "SJ_ListBox.h"
 
+class MyListBox : public SJ_ListBox
+{
+public:
+	virtual void DrawUserItem(CDC* ap_dc, RECT* ap_rect, int a_index, void* ap_data, unsigned char a_select_flag, unsigned char a_focus_flag)
+	{
+		if (a_select_flag) ap_dc->SetTextColor(RGB(255, 255, 0));
+
+		else ap_dc->SetTextColor(RGB(128, 128, 0));
+
+		CString str, temp;
+		GetText(a_index, temp);
+
+		str.Format(L"< SJ_ListBox : %02d > %s", a_index + 1, temp);
+		ap_dc->TextOut(ap_rect->left + 5, ap_rect->top + 5, str);
+	}
+};
+
 // COwnerDrawListBoxDlg 대화 상자
 class COwnerDrawListBoxDlg : public CDialogEx
 {
 private:
-	SJ_ListBox m_data_list;
+	MyListBox m_data_list;
 // 생성입니다.
 public:
 	COwnerDrawListBoxDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
